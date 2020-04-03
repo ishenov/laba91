@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, {useEffect, useRef, useState} from 'react';
 
 const App = () => {
@@ -47,5 +48,26 @@ const App = () => {
         </div>
     );
 };
+=======
+import React, {Component, Fragment} from 'react';
+import Toolbar from "./components/UI/Toolbar/Toolbar";
+import {Container} from "reactstrap";
+import Routes from "./Routes";
+
+class App extends Component {
+  render() {
+    return (
+      <Fragment>
+        <header>
+          <Toolbar/>
+        </header>
+        <Container style={{marginTop: '20px'}}>
+          <Routes/>
+        </Container>
+      </Fragment>
+    );
+  }
+}
+>>>>>>> 39c882c44f81eca4e688810176efeda95844bce4
 
 export default App;
