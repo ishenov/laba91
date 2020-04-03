@@ -13,6 +13,7 @@ router.post('/', async (req, res) => {
     console.log(req.body);
     try {
         user.generateToken();
+        console.log(user);
         await user.save();
         return res.send(user);
     } catch (e) {
