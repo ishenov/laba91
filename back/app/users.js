@@ -22,13 +22,12 @@ router.post('/', async (req, res) => {
 });
 
 router.post('/sessions', async (req, res) => {
-    const user = User.findOne({username: req.body.username});
+    const user = await User.findOne({username: req.body.username});
     if(!user) {
         return res.status(400).send({error: "Username or password not correct"});
     }
 
     const isMatch = await bcrypt.compare(req.body.password, user.password);
-
     if(!isMatch) {
         return res.status(400).send({error: "Username or password not correct"});
     }
