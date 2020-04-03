@@ -8,10 +8,6 @@ const UserMenu = ({user, logout}) => {
         Hello, {user.username}!
       </DropdownToggle>
       <DropdownMenu right>
-        <DropdownItem>
-          View profile
-        </DropdownItem>
-        <DropdownItem divider />
         <DropdownItem onClick={logout}>
           Logout
         </DropdownItem>

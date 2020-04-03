@@ -14,7 +14,7 @@ const Routes = () => {
 
   return (
     <Switch>
-      <Route path="/" exact component={Login} />
+      <Route path="/" exact component={Chat} />
       <Route path="/register" exact component={Register}/>
       <Route path="/login" exact component={Login}/>
       <ProtectedRoute isAllowed={user} path="/chat" exact component={Chat} />
