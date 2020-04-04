@@ -25,7 +25,12 @@ const run = async () => {
 
     app.use('/users', users);
     app.ws('/messenger', async function(ws, req) {
-        const user = await User.findOne(req.query);
+        let user = {username: 'Anon'};
+        try {
+            user = await User.findOne(req.query);
+        } catch (e) {
+            console.error(e);
+        }
         const id = nanoid();
 
         console.log('client connected', user.username);
@@ -38,8 +43,14 @@ const run = async () => {
                 userNames: Object.keys(connections)
             }));
         });
+        const messages = await Message.find().populate('user');
+        ws.send(JSON.stringify({
+            type: 'LATEST_MESSAGES',
+            messages: messages.map(m => ({author: m.user.username, datetime: m.datetime, message: m.text}))
+        }));
+        console.log(messages.map(m => ({author: m.user.username, datetime: m.datetime, message: m.text})));
 
-        ws.on('message', msg => {
+        ws.on('message', async msg => {
             console.log('message from ', user.username, ' : ', msg);
             const parsed = JSON.parse(msg);
             switch (parsed.type) {
@@ -49,7 +60,7 @@ const run = async () => {
                         author: user.username,
                         datetime: Date.now(),
                     };
-                    const message = new Message(receivedMessage);
+                    const message = new Message({text: receivedMessage.message, user: user._id, datetime: receivedMessage.datetime});
                     message.save();
                     Object.keys(connections).forEach(c => {
                         connections[c].send(JSON.stringify({
@@ -59,7 +70,8 @@ const run = async () => {
                     });
                     break;
                 case 'LAST_MESSAGES':
-
+                    const messages = await Message.find();
+                    console.log(messages);
                     break;
                 default:
                     break;
@@ -68,6 +80,12 @@ const run = async () => {
 
         ws.on('close', msg => {
             console.log('disconnected', id);
+            Object.keys(connections).forEach(c => {
+                connections[c].send(JSON.stringify({
+                    type: 'USER_LOGOUT',
+                    user: user.username
+                }))
+            });
             delete connections[user.username]
         })
     });

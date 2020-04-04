@@ -40,12 +40,12 @@ class Chat extends Component {
 						})
 					}
 				case 'LATEST_MESSAGES':
+					console.log(message);
 					this.setState({
 						messages: message.messages.reverse()
 					});
 					break;
 				case 'RECEIVE_MESSAGE':
-					console.log(message);
 					this.setState({
 						messages: [
 							...this.state.messages,
@@ -76,7 +76,6 @@ class Chat extends Component {
 	};
 
 	render() {
-		console.log(this.state.activeUsers);
 		if(!this.props.user) return <Redirect to='/login'/>;
 		return (
 			<div >
@@ -90,6 +89,12 @@ class Chat extends Component {
 						})
 					}
 				</div>
+				<Form inline onSubmit={(event) => this.sendMessage(event)}>
+					<FormGroup>
+						<Input type="text"  value={this.state.message} onChange={this.inputChangeHandler} name="message" placeholder="Enter your message" />
+					</FormGroup>
+					<Button type="submit" >Send</Button>
+				</Form>
 				<div className='chat'>
 					<div className="messages" id="chat">
 						{
@@ -99,12 +104,6 @@ class Chat extends Component {
 							))
 						}
 					</div>
-					<Form inline onSubmit={(event) => this.sendMessage(event)}>
-						<FormGroup>
-							<Input type="text"  value={this.state.message} onChange={this.inputChangeHandler} name="message" placeholder="Enter your message" />
-						</FormGroup>
-						<Button type="submit" >Send</Button>
-					</Form>
 				</div>
 			</div>
 		);
