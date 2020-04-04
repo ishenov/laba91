@@ -14,7 +14,7 @@ class Chat extends Component {
 
 
 	componentDidMount() {
-		let url = 'ws://localhost:8000/chat';
+		let url = 'ws://localhost:8000/messenger';
 		if (this.props.user) {
 			url += `?token=${this.props.user.token}`
 		}
@@ -45,10 +45,11 @@ class Chat extends Component {
 					});
 					break;
 				case 'RECEIVE_MESSAGE':
+					console.log(message);
 					this.setState({
 						messages: [
 							...this.state.messages,
-							message.message
+							{message: message.message, author: message.author, datetime: message.datetime}
 						]
 					});
 					break;
@@ -69,23 +70,22 @@ class Chat extends Component {
 		event.preventDefault();
 
 		this.websocket.send(JSON.stringify({
-			type: 'CREATE_MESSAGE',
-			author: this.props.user.username,
+			type: 'SEND_MESSAGE',
 			message: this.state.message
 		}));
 	};
 
-
 	render() {
+		console.log(this.state.activeUsers);
 		if(!this.props.user) return <Redirect to='/login'/>;
 		return (
 			<div >
 				<div className="users">
 					<h4>Online users:</h4>
 					{
-						this.state.activeUsers.map(author => {
+						this.state.activeUsers.map((author,index) => {
 							return (
-								<div key={author.id} >{<p>User: {author.username}</p> }</div>
+								<div key={index} >{<p>User: {author}</p> }</div>
 							)
 						})
 					}
@@ -93,9 +93,9 @@ class Chat extends Component {
 				<div className='chat'>
 					<div className="messages" id="chat">
 						{
-							this.state.messages.map(author => (
-								<p key={author.datetime}>
-									<strong>{author.author}: </strong>{author.message}</p>
+							this.state.messages.map(message => (
+								<p key={message.datetime}>
+									<strong>{message.author}: </strong>{message.message}</p>
 							))
 						}
 					</div>
