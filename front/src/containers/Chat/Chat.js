@@ -42,7 +42,7 @@ class Chat extends Component {
 				case 'LATEST_MESSAGES':
 					console.log(message);
 					this.setState({
-						messages: message.messages.reverse()
+						messages: message.messages
 					});
 					break;
 				case 'RECEIVE_MESSAGE':
@@ -68,6 +68,7 @@ class Chat extends Component {
 
 	sendMessage = event => {
 		event.preventDefault();
+		this.setState({message: ''});
 
 		this.websocket.send(JSON.stringify({
 			type: 'SEND_MESSAGE',

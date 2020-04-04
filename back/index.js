@@ -36,7 +36,7 @@ const run = async () => {
         console.log('client connected', user.username);
         connections[user.username] = ws;
         console.log('clients: ', Object.keys(connections).length);
-        console.log(Object.keys(connections));
+
         Object.keys(connections).forEach(c => {
             connections[c].send(JSON.stringify({
                 type: 'ACTIVE_USERS',
@@ -44,11 +44,11 @@ const run = async () => {
             }));
         });
         const messages = await Message.find().populate('user');
+
         ws.send(JSON.stringify({
             type: 'LATEST_MESSAGES',
             messages: messages.map(m => ({author: m.user.username, datetime: m.datetime, message: m.text}))
         }));
-        console.log(messages.map(m => ({author: m.user.username, datetime: m.datetime, message: m.text})));
 
         ws.on('message', async msg => {
             console.log('message from ', user.username, ' : ', msg);
