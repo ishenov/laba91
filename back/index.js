@@ -3,7 +3,7 @@ const cors = require('cors');
 const {nanoid} = require('nanoid');
 const expressWs = require('express-ws');
 const mongoose = require('mongoose');
-
+const Message = require('./models/Message');
 const users = require('./app/users');
 const config = require('./config');
 
@@ -17,7 +17,6 @@ app.use(express.json());
 const port = 8000;
 
 const connections = {};
-const messages = [];
 
 
 const run = async () => {
@@ -31,25 +30,27 @@ const run = async () => {
         connections[id] = ws;
         console.log('clients: ', Object.keys(connections).length);
 
-        ws.on('message', msg => {
-            console.log('message from ', id, ' : ', msg)
-            const parsed = JSON.parse(msg);
 
+        ws.on('message', msg => {
+            console.log('message from ', id, ' : ', msg);
+            const parsed = JSON.parse(msg);
             switch (parsed.type) {
                 case 'SEND_MESSAGE':
                     const receivedMessage = {
                         text: parsed.text,
+                        username: parsed.username,
                     };
+                    const message = new Message(receivedMessage);
+                    message.save();
                     Object.keys(connections).forEach(c => {
                         connections[c].send(JSON.stringify({
                             type: 'RECEIVE_MESSAGE',
                             ...receivedMessage
                         }))
                     });
-                    messages.push(receivedMessage);
-                    if(messages.length > 15){
-                        messages.splice(0, 1);
-                    }
+                    break;
+                case 'LAST_MESSAGES':
+
                     break;
                 default:
                     break;
