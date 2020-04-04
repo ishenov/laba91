@@ -25,12 +25,8 @@ const run = async () => {
 
     app.use('/users', users);
     app.ws('/messenger', async function(ws, req) {
-        let user = {username: 'Anon'};
-        try {
-            user = await User.findOne(req.query);
-        } catch (e) {
-            console.error(e);
-        }
+        const user = await User.findOne(req.query);
+
         const id = nanoid();
 
         console.log('client connected', user.username);
